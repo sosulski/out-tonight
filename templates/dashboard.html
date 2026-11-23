@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | Out Tonight{% endblock %}
+
+{% block content %}
+  <h1>What's on tonight, {{ profile.display_name or current_user.username }}?</h1>
+
+  {# Search another city. GET puts it in the URL: /dashboard?city=Austin, TX #}
+  <form method="get" action="/dashboard">
+    <label for="city">City, State</label>
+    <input type="text" id="city" name="city" placeholder="e.g., Chicago, IL" value="{{ city }}">
+    <button type="submit">Search</button>
+  </form>
+
+  {% if not city %}
+    <p>Set your home city on your <a href="/profile">profile</a>, or search for a city above.</p>
+  {% else %}
+
+    {# ----- Weather ----- #}
+    {% if weather %}
+      <div class="weather">
+        <h2>Weather in {{ weather.location }}</h2>
+        <p>{{ weather.temperature }}°F, {{ weather.conditions }}</p>
+        <p><strong>{{ weather.tip }}</strong></p>
+      </div>
+    {% elif weather_error %}
+      <p class="error">{{ weather_error }}</p>
+    {% endif %}
+
+    {# ----- Events ----- #}
+    <h2>Upcoming events{% if profile.favorite_category %}: {{ profile.favorite_category }}{% endif %}</h2>
+    {% if events %}
+      <ul class="events">
+        {% for event in events %}
+          <li>
+            {# The star: filled if saved, outline if not #}
+            {% if event.id in saved_ids %}
+              <form method="post" action="/unsave">
+                <input type="hidden" name="event_id" value="{{ event.id }}">
+                <input type="hidden" name="city" value="{{ city }}">
+                <button class="star" type="submit" title="Remove from saved">★</button>
+              </form>
+            {% else %}
+              <form method="post" action="/save">
+                <input type="hidden" name="event_id" value="{{ event.id }}">
+                <input type="hidden" name="name" value="{{ event.name }}">
+                <input type="hidden" name="url" value="{{ event.url }}">
+                <input type="hidden" name="date" value="{{ event.date }}">
+                <input type="hidden" name="venue" value="{{ event.venue }}">
+                <input type="hidden" name="city" value="{{ city }}">
+                <button class="star" type="submit" title="Save this event">☆</button>
+              </form>
+            {% endif %}
+            <div>
+              <a href="{{ event.url }}" target="_blank" rel="noopener">{{ event.name }}</a><br>
+              <span class="muted">{{ event.date }} · {{ event.venue }}</span>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% elif events_error and events_error != weather_error %}
+      <p class="error">{{ events_error }}</p>
+    {% elif events == [] %}
+      <p>No upcoming events found for {{ city }}.
+        {% if profile.favorite_category %}Try "Any" event type on your <a href="/profile">profile</a>.{% endif %}</p>
+    {% endif %}
+
+  {% endif %}
+{% endblock %}

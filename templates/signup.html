@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Sign up | Out Tonight{% endblock %}
+
+{% block content %}
+  <h1>Sign up</h1>
+
+  <form method="post" action="/signup">
+    <label for="username">Username</label>
+    <input type="text" id="username" name="username" value="{{ username or '' }}" required minlength="3">
+
+    <label for="password">Password (at least 8 characters)</label>
+    <input type="password" id="password" name="password" required minlength="8">
+
+    <label for="confirm">Type the password again</label>
+    <input type="password" id="confirm" name="confirm" required minlength="8">
+
+    <button type="submit">Create account</button>
+  </form>
+
+  {% if error %}
+    <p class="error">{{ error }}</p>
+  {% endif %}
+
+  <p>Already have an account? <a href="/login">Log in</a></p>
+{% endblock %}

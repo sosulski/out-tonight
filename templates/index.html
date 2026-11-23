@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Out Tonight</h1>
+  <p>Find something to do tonight. See the weather and upcoming events in your city,
+     and save the ones you like.</p>
+
+  <h2>What you can do</h2>
+  <ul>
+    <li>Check tonight's weather, with a tip for going out</li>
+    <li>See upcoming concerts, games, and shows near you</li>
+    <li>Pick your favorite type of event, and save events with a ★</li>
+  </ul>
+
+  {% if current_user.is_authenticated %}
+    <p><a class="button" href="/dashboard">Go to your dashboard</a></p>
+  {% else %}
+    <p>
+      <a class="button" href="/signup">Sign up free</a>
+      <a class="button secondary" href="/login">Log in</a>
+    </p>
+  {% endif %}
+{% endblock %}

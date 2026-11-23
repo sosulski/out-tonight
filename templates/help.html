@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Help | Out Tonight{% endblock %}
+
+{% block content %}
+  <h1>Help</h1>
+
+  <h2>Getting started</h2>
+  <ol>
+    <li><a href="/signup">Sign up</a> with a username and password.</li>
+    <li>On your <a href="/profile">profile</a>, enter your home city, like <em>Chicago, IL</em>.</li>
+    <li>Open your <a href="/dashboard">dashboard</a> to see the weather and events.</li>
+  </ol>
+
+  <h2>Questions</h2>
+  <p><strong>How do I see another city?</strong> Type it in the search box on your dashboard.</p>
+  <p><strong>Why do I only see sports?</strong> Your profile's favorite event type filters the list.
+     Choose "Any" to see everything.</p>
+  <p><strong>Where are my saved events?</strong> At the bottom of your profile. Click ★ again to remove one.</p>
+  <p><strong>"Couldn't find" a city?</strong> Use the city and a 2-letter state, with a comma: <em>Austin, TX</em>.</p>
+{% endblock %}
