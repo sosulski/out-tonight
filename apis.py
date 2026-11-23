@@ -2,7 +2,7 @@
 # Each function returns (result, error). One of the two is always None.
 
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 import requests
 
 # API keys come from Replit Secrets. If one is missing, that box on the
@@ -10,8 +10,15 @@ import requests
 OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
 TICKETMASTER_API_KEY = os.getenv("TICKETMASTER_API_KEY")
 
-# Event types a visitor can pick on their profile (Ticketmaster's names)
-CATEGORIES = ["Music", "Sports", "Arts & Theatre", "Family", "Film"]
+# Event types a visitor can pick on their profile, and the Ticketmaster
+# parameter that finds exactly that type of event
+CATEGORIES = {
+    "Music": {"segmentName": "Music"},
+    "Sports": {"segmentName": "Sports"},
+    "Arts & Theatre": {"segmentName": "Arts & Theatre"},
+    "Film": {"segmentName": "Film"},
+    "Family": {"includeFamily": "only"},
+}
 
 
 def split_location(location):
@@ -91,11 +98,15 @@ def fetch_events(location, category=""):
         return None, "Enter a city and state, like New York, NY"
     city, state = parts
 
+    # Only events from right now on, in the format Ticketmaster wants:
+    # 2026-11-23T12:00:00Z (the Z means UTC time)
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
     params = {"apikey": TICKETMASTER_API_KEY,
               "city": city, "stateCode": state, "countryCode": "US",
-              "sort": "date,asc", "size": 5}
-    if category:
-        params["classificationName"] = category  # only this type of event
+              "startDateTime": now, "sort": "date,asc", "size": 5}
+    if category in CATEGORIES:
+        params.update(CATEGORIES[category])  # only this type of event
 
     try:
         response = requests.get("https://app.ticketmaster.com/discovery/v2/events.json",
